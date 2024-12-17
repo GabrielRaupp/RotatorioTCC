@@ -1,20 +1,67 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native'; // Para navegação entre telas
+import { createStackNavigator } from '@react-navigation/stack'; // Para o stack de navegação
+import { Provider as PaperProvider } from 'react-native-paper'; // Para usar os botões de rádio do Paper
+
+// Importando as telas
+import HomeScreen from './components/HomeScreen'; // Tela inicial
+import AdminScreen from './components/LoginAdminScreen'; // Tela do administrador
+import LoginScreen from './components/LoginScreen'; // Tela de login
+import CadastroScreen from './components/CadastroScreen'; // Tela de cadastro
+import EsqueceuSenhaScreen from './components/EsqueceuSenhaScreen'; // Tela de recuperação de senha
+import RadioButtonExample from './components/RadioButtonExample'; // Tela de exemplo com botões de rádio
+
+// Criando a pilha de navegação
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="HomeScreen">
+          {/* Tela Inicial */}
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ title: 'Home' }}
+          />
+
+          {/* Tela Admin */}
+          <Stack.Screen
+            name="AdminScreen"
+            component={AdminScreen}
+            options={{ title: 'Administrador' }}
+          />
+
+          {/* Tela Login */}
+          <Stack.Screen
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ title: 'Login' }}
+          />
+
+          {/* Tela Cadastro */}
+          <Stack.Screen
+            name="CadastroScreen"
+            component={CadastroScreen}
+            options={{ title: 'Cadastro' }}
+          />
+
+          {/* Tela Esqueceu Senha */}
+          <Stack.Screen
+            name="EsqueceuSenhaScreen"
+            component={EsqueceuSenhaScreen}
+            options={{ title: 'Esqueceu Senha' }}
+          />
+
+          {/* Exemplo com Botões de Rádio */}
+          <Stack.Screen
+            name="RadioButtonExample"
+            component={RadioButtonExample}
+            options={{ title: 'Exemplo de Botões' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
