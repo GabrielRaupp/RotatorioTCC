@@ -18,7 +18,18 @@ export default function App() {
   return (
     <PaperProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="HomeScreen">
+        <Stack.Navigator
+          initialRouteName="HomeScreen"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#6200EE', // Cor de fundo do cabeçalho
+            },
+            headerTintColor: '#fff', // Cor do texto do cabeçalho
+            headerTitleStyle: {
+              fontWeight: 'bold', // Negrito no título
+            },
+          }}
+        >
           {/* Tela Inicial */}
           <Stack.Screen
             name="HomeScreen"

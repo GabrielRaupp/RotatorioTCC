@@ -51,20 +51,6 @@ export default function LoginScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>ENTRAR</Text>
       </TouchableOpacity>
-
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('EsqueceuSenhaScreen')}
-      >
-        Esqueceu sua senha?
-      </Text>
-
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('CadastroScreen')}
-      >
-        Inscrever-se!
-      </Text>
     </View>
   );
 }

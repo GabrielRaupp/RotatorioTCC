@@ -8,6 +8,7 @@ import {
   Alert,
   Image,
 } from 'react-native';
+import { auth, createUserWithEmailAndPassword } from '../firebaseConfig'; // Importe a configuração do Firebase
 
 export default function CadastroScreen({ navigation }) {
   const [nome, setNome] = useState('');
@@ -17,7 +18,7 @@ export default function CadastroScreen({ navigation }) {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
     // Validação dos campos
     if (!nome || !cpf || !fone || !email || !senha || !confirmarSenha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos!');
@@ -28,9 +29,22 @@ export default function CadastroScreen({ navigation }) {
       return;
     }
 
-    // Simulação de cadastro concluído
-    Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-    navigation.navigate('LoginScreen'); // Navegar para a tela de login
+    try {
+      // Cadastro no Firebase
+      await createUserWithEmailAndPassword(auth, email, senha);
+      Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+      navigation.navigate('LoginScreen'); // Navegar para a tela de login
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert('Erro', 'Este e-mail já está em uso!');
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert('Erro', 'O e-mail fornecido é inválido!');
+      } else if (error.code === 'auth/weak-password') {
+        Alert.alert('Erro', 'A senha fornecida é muito fraca!');
+      } else {
+        Alert.alert('Erro', 'Ocorreu um erro, tente novamente.');
+      }
+    }
   };
 
   return (

@@ -8,27 +8,62 @@ import {
   Alert,
   Image,
 } from 'react-native';
+import { auth, signInWithEmailAndPassword } from '../firebaseConfig'; // Importe o Firebase
 
 export default function LoginScreen({ navigation }) {
-  const [codigo, setCodigo] = useState('');
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleLogin = () => {
-    if (!codigo || !senha) {
+  // Função para fazer login
+  const handleLogin = async () => {
+    if (!email || !senha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos!');
       return;
     }
-    Alert.alert('Bem-vindo', `Login efetuado com o Código: ${codigo}`);
-    navigation.navigate('MenuScreen'); // Navegar para a tela de menu
+
+    try {
+      // Tentar autenticar o usuário com o Firebase
+      await signInWithEmailAndPassword(auth, email, senha);
+      Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
+
+      // Navegar para a tela de boas-vindas
+      navigation.navigate('WelcomeScreen'); 
+
+      // Depois de um pequeno delay, navegar para a tela inicial (Home ou Menu)
+      setTimeout(() => {
+        navigation.navigate('HomeScreen'); // Altere para a tela desejada
+      }, 2000); // 2 segundos de delay para o usuário ver a mensagem de boas-vindas
+    } catch (error) {
+      console.log(error); // Verifique o erro no console para mais detalhes
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert(
+          'Erro',
+          'Usuário não encontrado! Você precisa se cadastrar.',
+          [
+            {
+              text: 'Cadastrar',
+              onPress: () => navigation.navigate('CadastroScreen'), // Navega para a tela de cadastro
+            },
+            { text: 'Cancelar', style: 'cancel' },
+          ]
+        );
+      } else if (error.code === 'auth/wrong-password') {
+        Alert.alert('Erro', 'Senha incorreta!');
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert('Erro', 'O e-mail fornecido é inválido!');
+      } else {
+        Alert.alert('Erro', 'Ocorreu um erro, tente novamente.');
+      }
+    }
   };
 
   return (
     <View style={styles.container}>
       {/* Espaço para a logo */}
       <View style={styles.logoContainer}>
-         <Image
-            source={require('../assets/logorotarorio.png')} // Substitua pelo caminho do logotipo
-            style={styles.logo}
+        <Image
+          source={require('../assets/logorotarorio.png')} // Substitua pelo caminho do logotipo
+          style={styles.logo}
         />
       </View>
 
@@ -39,10 +74,10 @@ export default function LoginScreen({ navigation }) {
       {/* Campos de entrada */}
       <TextInput
         style={styles.input}
-        placeholder="Código"
-        value={codigo}
-        onChangeText={setCodigo}
-        keyboardType="numeric"
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address" // Definir para aceitar e-mail
       />
       <TextInput
         style={styles.input}
