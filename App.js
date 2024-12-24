@@ -10,6 +10,7 @@ import LoginScreen from './components/LoginScreen'; // Tela de login
 import CadastroScreen from './components/CadastroScreen'; // Tela de cadastro
 import EsqueceuSenhaScreen from './components/EsqueceuSenhaScreen'; // Tela de recuperação de senha
 import RadioButtonExample from './components/RadioButtonExample'; // Tela de exemplo com botões de rádio
+import MenuScreen from './components/MenuScreen'; // Tela de menu (adicionada)
 
 // Criando a pilha de navegação
 const Stack = createStackNavigator();
@@ -70,6 +71,13 @@ export default function App() {
             name="RadioButtonExample"
             component={RadioButtonExample}
             options={{ title: 'Exemplo de Botões' }}
+          />
+
+          {/* Tela de Menu */}
+          <Stack.Screen
+            name="MenuScreen"
+            component={MenuScreen}
+            options={{ title: 'Menu' }}
           />
         </Stack.Navigator>
       </NavigationContainer>

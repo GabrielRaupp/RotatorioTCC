@@ -22,19 +22,14 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      // Tentar autenticar o usuário com o Firebase
+      // Autenticar o usuário com o Firebase
       await signInWithEmailAndPassword(auth, email, senha);
       Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
 
-      // Navegar para a tela de boas-vindas
-      navigation.navigate('WelcomeScreen'); 
-
-      // Depois de um pequeno delay, navegar para a tela inicial (Home ou Menu)
-      setTimeout(() => {
-        navigation.navigate('HomeScreen'); // Altere para a tela desejada
-      }, 2000); // 2 segundos de delay para o usuário ver a mensagem de boas-vindas
+      // Navegar para a tela de Menu
+      navigation.navigate('MenuScreen'); // Certifique-se de que 'MenuScreen' está registrado no Stack.Navigator
     } catch (error) {
-      console.log(error); // Verifique o erro no console para mais detalhes
+      console.log(error); // Log do erro no console para depuração
       if (error.code === 'auth/user-not-found') {
         Alert.alert(
           'Erro',
@@ -77,7 +72,7 @@ export default function LoginScreen({ navigation }) {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        keyboardType="email-address" // Definir para aceitar e-mail
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
