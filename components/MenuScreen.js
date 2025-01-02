@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ScrollView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -28,51 +29,30 @@ export default function MenuScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Botões principais */}
-      <View style={styles.grid}>
-        <TouchableOpacity style={styles.card}>
-          <Image
-            source={require('../assets/iconeveiculo.jfif')} // Ícone de veículos
-            style={styles.icon}
-          />
-          <Text style={styles.cardText}>veículos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
-          <Image
-            source={require('../assets/iconecredito.jfif')} // Ícone de crédito
-            style={styles.icon}
-          />
-          <Text style={styles.cardText}>crédito</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
-          <Image
-            source={require('../assets/iconeloc.jfif')} // Ícone de localização
-            style={styles.icon}
-          />
-          <Text style={styles.cardText}>localização</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
-          <Image
-            source={require('../assets/iconepesquisar.jpg')} // Ícone de pesquisar
-            style={styles.icon}
-          />
-          <Text style={styles.cardText}>pesquisar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
-          <Image
-            source={require('../assets/suport.png')} // Ícone de ajuda
-            style={styles.icon}
-          />
-          <Text style={styles.cardText}>ajuda</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.card}>
-          <Image
-            source={require('../assets/multa.jfif')} // Ícone de infrações
-            style={styles.icon}
-          />
-          <Text style={styles.cardText}>infrações</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Conteúdo rolável */}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Botões principais */}
+        <View style={styles.grid}>
+          <TouchableOpacity style={styles.card}>
+            <Text style={styles.cardText}>veículos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Text style={styles.cardText}>crédito</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Text style={styles.cardText}>localização</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Text style={styles.cardText}>pesquisar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Text style={styles.cardText}>ajuda</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Text style={styles.cardText}>infrações</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
 
       {/* Barra de navegação inferior */}
       <View style={styles.footer}>
@@ -117,8 +97,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   grid: {
-    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
@@ -133,12 +115,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
     elevation: 3,
-  },
-  icon: {
-    width: 50,
-    height: 50,
-    marginBottom: 10,
-    resizeMode: 'contain',
   },
   cardText: {
     fontSize: 14,
