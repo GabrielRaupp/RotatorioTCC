@@ -30,7 +30,7 @@ export default function MenuScreen({ navigation }) {
       {/* Cabeçalho */}
       <View style={styles.header}>
         <TouchableOpacity>
-          <FontAwesome name="bars" size={28} color="#000" />
+          <FontAwesome name="bars" size={30} color="#000" />
         </TouchableOpacity>
         <View style={styles.logoContainer}>
           <Image
@@ -40,7 +40,7 @@ export default function MenuScreen({ navigation }) {
           <Text style={styles.title}>Menu</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('PerfilScreen')}>
-          <FontAwesome name="user-circle" size={28} color="#000" />
+          <FontAwesome name="user-circle" size={30} color="#000" />
         </TouchableOpacity>
       </View>
 
@@ -63,10 +63,10 @@ export default function MenuScreen({ navigation }) {
         {footerItems.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={styles.footerButton}
             onPress={() => navigation.navigate(item.route)}
+            style={styles.footerIcon}
           >
-            <FontAwesome name={item.icon} size={28} color="#000" />
+            <FontAwesome name={item.icon} size={30} color="#000" />
           </TouchableOpacity>
         ))}
       </View>
@@ -77,7 +77,7 @@ export default function MenuScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: '#D9D9D9',
   },
   header: {
     flexDirection: 'row',
@@ -85,15 +85,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: '#F4F4F4',
+    backgroundColor: '#F7F7F7',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
-    width: 45,
-    height: 45,
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
     marginRight: 10,
   },
@@ -106,39 +108,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: 15,
   },
   card: {
-    width: '45%',  // Reduzido de 48% para 45% para cards mais compactos
-    marginVertical: 8,
+    width: '45%',
+    marginVertical: 15,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
     elevation: 5,
-    paddingVertical: 7,  // Diminuído o padding vertical para compactar o card
+    paddingVertical: 20,
   },
   icon: {
-    width: 50,  // Reduzido de 60 para 50
-    height: 50, // Reduzido de 60 para 50
-    marginBottom: 6,  // Ajustado para equilíbrio visual
+    width: 70,
+    height: 70,
+    marginBottom: 10,
     resizeMode: 'contain',
   },
   cardText: {
-    fontSize: 14,  // Reduzido para texto mais compacto
+    fontSize: 16,
     textAlign: 'center',
-    color: '#555',
+    color: '#333',
+    fontWeight: '600',
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 15,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderColor: '#DDD',
+    borderColor: '#CCC',
   },
-  footerButton: {
+  footerIcon: {
     padding: 10,
   },
 });

@@ -10,7 +10,18 @@ import LoginScreen from './components/LoginScreen'; // Tela de login
 import CadastroScreen from './components/CadastroScreen'; // Tela de cadastro
 import EsqueceuSenhaScreen from './components/EsqueceuSenhaScreen'; // Tela de recuperação de senha
 import RadioButtonExample from './components/RadioButtonExample'; // Tela de exemplo com botões de rádio
-import MenuScreen from './components/MenuScreen'; // Tela de menu (adicionada)
+import MenuScreen from './components/MenuScreen';
+import Veiculos from './components/Veiculos'
+import PerfilScreen from './components/PerfilScreen';
+import Localizacao from './components/LocalizacaoScreen'
+import Ajuda from './components/AjudaScreen'
+import Credito from './components/CreditoScreen'
+import Buy from './components/BuyCredito'
+import Allveiculos from './components/Allveiculos'
+import Infracao from './components/Infracao'
+
+
+
 
 // Criando a pilha de navegação
 const Stack = createStackNavigator();
@@ -79,6 +90,53 @@ export default function App() {
             component={MenuScreen}
             options={{ title: 'Menu' }}
           />
+
+          <Stack.Screen
+            name="Veiculos"
+            component={Veiculos}
+            options={{ title: 'Veiculos' }}
+          />
+        <Stack.Screen name="PerfilScreen" 
+        component={PerfilScreen} 
+        options={{ title: 'Perfil' }}
+        />
+
+          <Stack.Screen
+            name="Localizacao"
+            component={Localizacao}
+            options={{ title: 'Localizacao' }}
+          />
+
+          <Stack.Screen
+            name="Ajuda"
+            component={Ajuda}
+            options={{ title: 'Ajuda' }}
+          />
+           <Stack.Screen
+            name="Credito"
+            component={Credito}
+            options={{ title: 'Credito' }}
+          />
+
+          <Stack.Screen
+            name="Buy"
+            component={Buy}
+            options={{ title: 'Buy' }}
+          />
+          <Stack.Screen
+            name="Allveiculos"
+            component={Allveiculos}
+            options={{ title: 'Veiculos' }}
+          />
+          <Stack.Screen
+            name="Infracao"
+            component={Infracao}
+            options={{ title: 'Infracão' }}
+          />
+
+
+
+          
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
