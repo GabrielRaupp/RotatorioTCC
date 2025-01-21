@@ -9,6 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { auth, signInWithEmailAndPassword } from '../firebaseConfig'; // Importe o Firebase
+import { FontAwesome } from '@expo/vector-icons'; // Importe o ícone do FontAwesome
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -54,6 +55,23 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <TouchableOpacity>
+          <FontAwesome name="bars" size={24} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../assets/logorotarorio.png')}
+            style={styles.logo}
+          />
+          <Text style={styles.title}>Menu</Text>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('PerfilScreen')}>
+          <FontAwesome name="user-circle" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
       {/* Espaço para a logo */}
       <View style={styles.logoContainer}>
         <Image
@@ -102,6 +120,19 @@ export default function LoginScreen({ navigation }) {
       >
         Inscrever-se!
       </Text>
+
+      {/* Barra de navegação inferior */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <FontAwesome name="home" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Credito')}>
+          <FontAwesome name="dollar" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Ajuda')}>
+          <FontAwesome name="cog" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -126,6 +157,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
+    color: '#333',
   },
   subtitle: {
     fontSize: 14,
@@ -147,6 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 15,
   },
   buttonText: {
     color: '#FFF',
@@ -159,5 +192,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 15,
     textDecorationLine: 'underline',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#FFF',
+    elevation: 4, // Sombra para o cabeçalho
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#FFF',
+    elevation: 4, // Sombra para o rodapé
   },
 });

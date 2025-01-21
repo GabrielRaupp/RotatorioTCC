@@ -11,9 +11,20 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { firestore, storage } from '../firebaseConfig'; 
-import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
+import { firestore, storage } from '../firebaseConfig';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  where,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function RegistroPlacasScreen() {
@@ -23,16 +34,21 @@ export default function RegistroPlacasScreen() {
   const [cor, setCor] = useState('');
   const [image, setImage] = useState(null);
   const [placasRegistradas, setPlacasRegistradas] = useState([]);
-  const [editandoPlaca, setEditandoPlaca] = useState(null); 
+  const [editandoPlaca, setEditandoPlaca] = useState(null);
+  const auth = getAuth();
+  const user = auth.currentUser;
 
-  const validarPlaca = (placa) => {
-    const regexPlaca = /^[A-Z]{3}[0-9]{4}$/;
-    return regexPlaca.test(placa);
-  };
+  const validarPlaca = (placa) => /^[A-Z]{3}[0-9]{4}$/.test(placa);
 
   const carregarPlacas = async () => {
     try {
-      const q = query(collection(firestore, 'placas'), orderBy('placa', 'asc'));
+      if (!user) throw new Error('Usuário não autenticado.');
+
+      const q = query(
+        collection(firestore, 'placas'),
+        where('userId', '==', user.uid),
+        orderBy('placa', 'asc')
+      );
       const querySnapshot = await getDocs(q);
       const placas = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -40,7 +56,7 @@ export default function RegistroPlacasScreen() {
       }));
       setPlacasRegistradas(placas);
     } catch (error) {
-      console.error('Erro ao carregar placas:', error.message);
+      Alert.alert('Erro', error.message);
     }
   };
 
@@ -50,11 +66,9 @@ export default function RegistroPlacasScreen() {
       const blob = await response.blob();
       const storageRef = ref(storage, `placas/${new Date().getTime()}.jpg`);
       await uploadBytes(storageRef, blob);
-      const url = await getDownloadURL(storageRef);
-      return url;
+      return await getDownloadURL(storageRef);
     } catch (error) {
-      console.error('Erro ao salvar imagem no Storage:', error.message);
-      throw error;
+      throw new Error('Erro ao salvar imagem no Storage.');
     }
   };
 
@@ -65,46 +79,36 @@ export default function RegistroPlacasScreen() {
     }
 
     try {
-      let imageUrl = null;
-      if (image) {
-        imageUrl = await salvarImagemNoStorage(image);
-      }
+      if (!user) throw new Error('Usuário não autenticado.');
 
-      const novaPlaca = { placa, marca, ano, cor, imageUrl };
+      let imageUrl = image ? await salvarImagemNoStorage(image) : null;
+      const novaPlaca = { placa, marca, ano, cor, imageUrl, userId: user.uid };
 
       if (editandoPlaca) {
         await updateDoc(doc(firestore, 'placas', editandoPlaca.id), novaPlaca);
+        setPlacasRegistradas((prev) =>
+          prev.map((p) => (p.id === editandoPlaca.id ? { ...p, ...novaPlaca } : p))
+        );
         Alert.alert('Sucesso', 'Placa atualizada com sucesso!');
       } else {
-        await addDoc(collection(firestore, 'placas'), novaPlaca);
+        const docRef = await addDoc(collection(firestore, 'placas'), novaPlaca);
+        setPlacasRegistradas((prev) => [...prev, { id: docRef.id, ...novaPlaca }]);
         Alert.alert('Sucesso', 'Placa registrada com sucesso!');
       }
-
-      setPlacasRegistradas((prev) =>
-        editandoPlaca
-          ? prev.map((placa) =>
-              placa.id === editandoPlaca.id ? { ...placa, ...novaPlaca } : placa
-            )
-          : [...prev, novaPlaca]
-      );
       resetForm();
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível registrar a placa.');
-      console.error('Erro ao registrar placa:', error.message);
+      Alert.alert('Erro', error.message);
     }
   };
 
   const tirarFoto = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaType.IMAGE,
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
+    if (!result.canceled) setImage(result.uri);
   };
 
   const editarPlaca = (placa) => {
@@ -119,11 +123,10 @@ export default function RegistroPlacasScreen() {
   const excluirPlaca = async (placaId) => {
     try {
       await deleteDoc(doc(firestore, 'placas', placaId));
-      setPlacasRegistradas((prev) => prev.filter((placa) => placa.id !== placaId));
+      setPlacasRegistradas((prev) => prev.filter((p) => p.id !== placaId));
       Alert.alert('Sucesso', 'Placa excluída com sucesso!');
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível excluir a placa.');
-      console.error('Erro ao excluir placa:', error.message);
+      Alert.alert('Erro', error.message);
     }
   };
 
@@ -141,14 +144,12 @@ export default function RegistroPlacasScreen() {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
+    
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      
+      <ScrollView 
+      contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+        
         <Text style={styles.title}>{editandoPlaca ? 'Editar Placa' : 'Registrar Placas'}</Text>
 
         <TextInput

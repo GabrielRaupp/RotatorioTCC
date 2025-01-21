@@ -5,70 +5,100 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ScrollView,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function MenuScreen({ navigation }) {
-  const menuItems = [
-    { label: 'Veículos', icon: require('../assets/iconeveiculo.png'), route: 'Veiculos' },
-    { label: 'Crédito', icon: require('../assets/iconecredito.png'), route: 'Credito' },
-    { label: 'Localização', icon: require('../assets/iconeloc.png'), route: 'Localizacao' },
-    { label: 'Pesquisar', icon: require('../assets/iconepesquisar.jpg'), route: 'Ajuda' },
-    { label: 'Ajuda', icon: require('../assets/suport.png'), route: 'Ajuda' },
-    { label: 'Infrações', icon: require('../assets/multa.png'), route: 'Infracao' },
-  ];
-
-  const footerItems = [
-    { icon: 'home', route: 'HomeScreen' },
-    { icon: 'dollar', route: 'CréditoScreen' },
-    { icon: 'cog', route: 'ConfigScreen' },
-  ];
-
   return (
     <View style={styles.container}>
       {/* Cabeçalho */}
       <View style={styles.header}>
         <TouchableOpacity>
-          <FontAwesome name="bars" size={28} color="#000" />
+          <FontAwesome name="bars" size={24} color="#000" />
         </TouchableOpacity>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/logorotarorio.png')}
+            source={require('../assets/logorotarorio.png')} 
             style={styles.logo}
           />
           <Text style={styles.title}>Menu</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('PerfilScreen')}>
-          <FontAwesome name="user-circle" size={28} color="#000" />
+          <FontAwesome name="user-circle" size={24} color="#000" />
         </TouchableOpacity>
       </View>
 
-      {/* Conteúdo rolável */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {menuItems.map((item, index) => (
+      {/* Conteúdo principal */}
+      <View style={styles.content}>
+        <View style={styles.grid}>
           <TouchableOpacity
-            key={index}
             style={styles.card}
-            onPress={() => navigation.navigate(item.route)}
+            onPress={() => navigation.navigate('Veiculos')}
           >
-            <Image source={item.icon} style={styles.icon} />
-            <Text style={styles.cardText}>{item.label}</Text>
+            <Image
+              source={require('../assets/iconeveiculo.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.cardText}>veículos</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('Credito')}
+          >
+            <Image
+              source={require('../assets/iconecredito.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.cardText}>crédito</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('Localizacao')}
+          >
+            <Image
+              source={require('../assets/iconeloc.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.cardText}>localização</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Image
+              source={require('../assets/iconepesquisar.jpg')}
+              style={styles.icon}
+            />
+            <Text style={styles.cardText}>pesquisar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('Ajuda')}
+          >
+            <Image
+              source={require('../assets/suport.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.cardText}>ajuda</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
+            <Image
+              source={require('../assets/multa.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.cardText}>infrações</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Barra de navegação inferior */}
       <View style={styles.footer}>
-        {footerItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.footerButton}
-            onPress={() => navigation.navigate(item.route)}
-          >
-            <FontAwesome name={item.icon} size={28} color="#000" />
-          </TouchableOpacity>
-        ))}
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <FontAwesome name="home" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Credito')}>
+          <FontAwesome name="dollar" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Ajuda')}>
+          <FontAwesome name="cog" size={24} color="#000" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -77,68 +107,72 @@ export default function MenuScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: '#D9D9D9',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#F4F4F4',
+    paddingVertical: 10,
+    backgroundColor: '#F7F7F7',
   },
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
-    width: 45,
-    height: 45,
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
     marginRight: 10,
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
   },
-  scrollContent: {
+  content: {
+    flex: 1,
+    paddingBottom: 70,
+  },
+  grid: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: 20,
+    justifyContent: 'space-around',
+    padding: 10,
   },
   card: {
-    width: '45%',  // Reduzido de 48% para 45% para cards mais compactos
-    marginVertical: 8,
+    width: '40%',
+    aspectRatio: 1,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
-    elevation: 5,
-    paddingVertical: 7,  // Diminuído o padding vertical para compactar o card
+    marginVertical: 10,
+    borderRadius: 10,
+    elevation: 3,
   },
   icon: {
-    width: 50,  // Reduzido de 60 para 50
-    height: 50, // Reduzido de 60 para 50
-    marginBottom: 6,  // Ajustado para equilíbrio visual
+    width: 50,
+    height: 50,
+    marginBottom: 10,
     resizeMode: 'contain',
   },
   cardText: {
-    fontSize: 14,  // Reduzido para texto mais compacto
+    fontSize: 14,
     textAlign: 'center',
-    color: '#555',
   },
   footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 15,
+    padding: 15,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderColor: '#DDD',
-  },
-  footerButton: {
-    padding: 10,
+    borderColor: '#CCC',
   },
 });

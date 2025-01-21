@@ -1,59 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { firestore } from '../firebaseConfig'; // Ajuste conforme sua configuração do Firebase
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { firestore } from '../firebaseConfig';
+import { collection, getDocs, doc, updateDoc, query, where, getDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 export default function AdminScreen() {
   const [placasRegistradas, setPlacasRegistradas] = useState([]);
   const [erro, setErro] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredPlacas, setFilteredPlacas] = useState([]);
 
-  // Função para carregar placas registradas
   const carregarPlacas = async () => {
     try {
-      const placasRef = collection(firestore, 'veiculos');
-      const placasSnapshot = await getDocs(placasRef);
-      const placasList = placasSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        setErro('Usuário não autenticado.');
+        return;
+      }
+
+      const placasRef = collection(firestore, 'placas');
+      const q = query(placasRef, where('userId', '==', user.uid));
+      const placasSnapshot = await getDocs(q);
+
+      if (placasSnapshot.empty) {
+        setPlacasRegistradas([]);
+        return;
+      }
+
+      const placasList = await Promise.all(
+        placasSnapshot.docs.map(async (docSnapshot) => {
+          const placaData = docSnapshot.data();
+          const userDoc = await getDoc(doc(firestore, 'users', placaData.userId));
+          const userInfo = userDoc.exists() ? userDoc.data() : { nome: 'Desconhecido', email: 'Não informado' };
+          
+          return {
+            id: docSnapshot.id,
+            placa: placaData.placa || 'Placa desconhecida',
+            email: userInfo.email || 'Usuário não informado',
+            nome: userInfo.nome || 'Nome não disponível',
+            expiracao: placaData.expiracao || 'Data não disponível',
+            imagem: placaData.imagem || null,
+            pago: placaData.pago || false,
+          };
+        })
+      );
+
       setPlacasRegistradas(placasList);
+      setFilteredPlacas(placasList);
     } catch (error) {
-      console.error("Erro ao carregar placas:", error);
-      setErro("Erro ao carregar placas registradas.");
+      console.error('Erro ao carregar placas:', error);
+      setErro('Erro ao carregar placas registradas. Tente novamente mais tarde.');
     }
   };
 
-  // Função para adicionar infração
+  useEffect(() => {
+    carregarPlacas();
+  }, []);
+
+  useEffect(() => {
+    const filtered = placasRegistradas.filter((placa) =>
+      placa.placa.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredPlacas(filtered);
+  }, [searchQuery, placasRegistradas]);
+
   const adicionarInfracao = async (placaId) => {
     try {
-      const placaRef = doc(firestore, 'veiculos', placaId);
+      const placaRef = doc(firestore, 'placas', placaId);
       await updateDoc(placaRef, {
-        infração: true, // ou o campo correspondente que você queira usar
+        infracao: true,
       });
       Alert.alert('Sucesso', 'Infração registrada com sucesso!');
+      carregarPlacas();
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível adicionar a infração.');
       console.error('Erro ao adicionar infração:', error);
     }
   };
 
-  // Carregar placas ao montar o componente
-  useEffect(() => {
-    carregarPlacas();
-  }, []);
-
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
       <View style={styles.header}>
         <TouchableOpacity>
           <FontAwesome name="bars" size={24} color="#000" />
@@ -64,18 +92,25 @@ export default function AdminScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Exibição das Placas Registradas */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar placa..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
       <ScrollView style={styles.scrollContainer}>
         {erro && <Text style={styles.errorText}>{erro}</Text>}
 
-        {placasRegistradas.length === 0 ? (
-          <Text style={styles.noPlacasText}>Nenhuma placa registrada.</Text>
+        {filteredPlacas.length === 0 ? (
+          <Text style={styles.noPlacasText}>Nenhuma placa encontrada.</Text>
         ) : (
-          placasRegistradas.map((placa) => (
+          filteredPlacas.map((placa) => (
             <View key={placa.id} style={styles.placaContainer}>
               <Text style={styles.placaText}>Placa: {placa.placa}</Text>
-              <Text style={styles.placaText}>Usuário: {placa.usuario || 'Desconhecido'}</Text>
-              <Text style={styles.placaText}>Email: {placa.email}</Text> {/* Exibindo email */}
+              <Text style={styles.placaText}>Nome: {placa.nome}</Text>
+              <Text style={styles.placaText}>Email: {placa.email}</Text>
+              <Text style={styles.placaText}>Status: {placa.pago ? 'Pago' : 'Não Pago'}</Text>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => adicionarInfracao(placa.id)}
@@ -86,19 +121,6 @@ export default function AdminScreen() {
           ))
         )}
       </ScrollView>
-
-      {/* Barra de navegação inferior */}
-      <View style={styles.footer}>
-        <TouchableOpacity>
-          <FontAwesome name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome name="dollar" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome name="cog" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -119,6 +141,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    margin: 20,
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     padding: 20,
@@ -155,14 +185,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 20,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderColor: '#CCC',
   },
 });
