@@ -7,117 +7,121 @@ import {
   StyleSheet,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
-import { auth, signInWithEmailAndPassword } from '../firebaseConfig'; // Importe o Firebase
+import { auth, signInWithEmailAndPassword } from '../firebaseConfig';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  // Função para fazer login
   const handleLogin = async () => {
     if (!email || !senha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos!');
       return;
     }
 
-    // Verificar se o código e senha são predefinidos
     if (email === '11111' && senha === '123456') {
-      // Navegar para a tela de veículos cadastrados
       navigation.navigate('Allveiculos');
       return;
     }
 
     try {
-      // Autenticar o usuário com o Firebase
       await signInWithEmailAndPassword(auth, email, senha);
       Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
-      navigation.navigate('Allveiculos'); // Navegar para a tela de Veículos
+      navigation.navigate('Allveiculos');
     } catch (error) {
-      console.log(error); // Log do erro no console para depuração
-      if (error.code === 'auth/user-not-found') {
-        Alert.alert(
-          'Erro',
-          'Usuário não encontrado! Você precisa se cadastrar.',
-          [
-            {
-              text: 'Cadastrar',
-              onPress: () => navigation.navigate('CadastroScreen'), // Navega para a tela de cadastro
-            },
+      console.log(error);
+      switch (error.code) {
+        case 'auth/user-not-found':
+          Alert.alert('Erro', 'Usuário não encontrado!', [
+            { text: 'Cadastrar', onPress: () => navigation.navigate('CadastroScreen') },
             { text: 'Cancelar', style: 'cancel' },
-          ]
-        );
-      } else if (error.code === 'auth/wrong-password') {
-        Alert.alert('Erro', 'Senha incorreta!');
-      } else if (error.code === 'auth/invalid-email') {
-        Alert.alert('Erro', 'O e-mail fornecido é inválido!');
-      } else {
-        Alert.alert('Erro', 'Ocorreu um erro, tente novamente.');
+          ]);
+          break;
+        case 'auth/wrong-password':
+          Alert.alert('Erro', 'Senha incorreta!');
+          break;
+        case 'auth/invalid-email':
+          Alert.alert('Erro', 'O e-mail fornecido é inválido!');
+          break;
+        default:
+          Alert.alert('Erro', 'Ocorreu um erro, tente novamente.');
       }
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Espaço para a logo */}
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../assets/logorotarorio.png')} // Substitua pelo caminho do logotipo
-          style={styles.logo}
+    <View style={styles.containerWrapper}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+            <FontAwesome name="arrow-left" size={24} color="#000" />
+          </TouchableOpacity>
+          <View style={styles.logoContainer}>
+            <Image source={require('../assets/logorotarorio.png')} style={styles.logo} />
+            <Text style={styles.title}>Login</Text>
+          </View>
+          <View style={{ width: 24 }} />
+        </View>
+
+        <Text style={styles.subtitle}>Faça login para continuar</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Código"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="number-pad"
+          maxLength={5}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>ENTRAR</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.link} onPress={() => navigation.navigate('EsqueceuSenhaScreen')}>
+          Esqueceu sua senha?
+        </Text>
+        <Text style={styles.link} onPress={() => navigation.navigate('CadastroScreen')}>
+          Inscrever-se
+        </Text>
+      </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <FontAwesome name="home" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <FontAwesome name="dollar" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <FontAwesome name="cog" size={24} color="#000" />
+        </TouchableOpacity>
       </View>
-
-      {/* Título */}
-      <Text style={styles.title}>Entrar!</Text>
-      <Text style={styles.subtitle}>Faça login para continuar!</Text>
-
-      {/* Campos de entrada */}
-      <TextInput
-        style={styles.input}
-        placeholder="Código"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="number-pad"
-        maxLength={5} // Limitar o comprimento para 5 caracteres
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
-
-      {/* Botão de login */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>ENTRAR</Text>
-      </TouchableOpacity>
-
-      {/* Link para recuperação de senha */}
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('EsqueceuSenhaScreen')}
-      >
-        Esqueceu sua senha?
-      </Text>
-
-      {/* Link para cadastro */}
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('CadastroScreen')}
-      >
-        Inscrever-se!
-      </Text>
     </View>
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
-  container: {
+  containerWrapper: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#F7F7F7',
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    alignItems: 'center',
   },
   logoContainer: {
     alignItems: 'center',
@@ -128,35 +132,37 @@ const styles = StyleSheet.create({
     height: 100,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
+    color: '#333',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
     textAlign: 'center',
     marginBottom: 20,
   },
   input: {
+    width: '100%',
     height: 50,
     backgroundColor: '#EDEDED',
     borderRadius: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     marginBottom: 15,
     fontSize: 16,
   },
   button: {
+    width: '100%',
     height: 50,
     backgroundColor: '#000',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   link: {
@@ -166,5 +172,19 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textDecorationLine: 'underline',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 20,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 15,
+    backgroundColor: '#FFF',
+    elevation: 4,
+  },
 });
-  

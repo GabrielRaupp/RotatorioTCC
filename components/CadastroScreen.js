@@ -19,23 +19,21 @@ export default function CadastroScreen({ navigation }) {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
-  // Função para formatar o CPF
   const formatCpf = (value) => {
     return value
-      .replace(/\D/g, '') // Remove caracteres não numéricos
-      .replace(/(\d{3})(\d)/, '$1.$2') // Adiciona o primeiro ponto
-      .replace(/(\d{3})(\d)/, '$1.$2') // Adiciona o segundo ponto
-      .replace(/(\d{3})(\d{1,2})$/, '$1-$2') // Adiciona o hífen
-      .slice(0, 14); // Limita a 14 caracteres
+      .replace(/\D/g, '')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+      .slice(0, 14);
   };
 
-  // Função para formatar o telefone
   const formatFone = (value) => {
     return value
-      .replace(/\D/g, '') // Remove caracteres não numéricos
-      .replace(/(\d{2})(\d)/, '($1) $2') // Adiciona o parêntese
-      .replace(/(\d{5})(\d)/, '$1-$2') // Adiciona o hífen
-      .slice(0, 15); // Limita a 15 caracteres
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .slice(0, 15);
   };
 
   const handleCadastro = async () => {
@@ -47,13 +45,10 @@ export default function CadastroScreen({ navigation }) {
       Alert.alert('Erro', 'As senhas não coincidem!');
       return;
     }
-  
+
     try {
-      // Criação do usuário
       const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       const user = userCredential.user;
-  
-      // Criação de dados no Firestore
       const userRef = doc(firestore, 'usuarios', user.uid);
       await setDoc(userRef, {
         nome,
@@ -62,18 +57,15 @@ export default function CadastroScreen({ navigation }) {
         email,
         createdAt: new Date(),
       });
-  
-      // Login automático após cadastro
-      await signInWithEmailAndPassword(auth, email, senha);
-  
-      // Alerta de sucesso e navegação para a tela de login ou principal
+
+      // Automatically navigate to LoginScreen after successful registration
       Alert.alert(
         'Sucesso',
         'Usuário criado com sucesso!',
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('LoginScreen'), // Ou outra tela principal
+            onPress: () => navigation.navigate('LoginScreen'), // Navigate to LoginScreen
           },
         ],
         { cancelable: false }
@@ -87,7 +79,7 @@ export default function CadastroScreen({ navigation }) {
       } else if (error.code === 'auth/weak-password') {
         mensagemErro = 'A senha fornecida é muito fraca!';
       }
-  
+
       Alert.alert(
         'Erro',
         mensagemErro,
@@ -100,18 +92,20 @@ export default function CadastroScreen({ navigation }) {
       );
     }
   };
-  
+
+
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backText}>{'<'}</Text>
         </TouchableOpacity>
-        <Image
-          source={require('../assets/logorotarorio.png')}
-          style={styles.logo}
-        />
+        <View style={styles.logoContainer}>
+          <Image source={require('../assets/logorotarorio.png')} style={styles.logo} />
+          <Text style={styles.title}>Perfil</Text>
+        </View>
+        <View style={{ width: 24 }} />
       </View>
 
       <Text style={styles.title}>Crie sua conta!</Text>
@@ -164,6 +158,18 @@ export default function CadastroScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleCadastro}>
         <Text style={styles.buttonText}>CRIAR!</Text>
       </TouchableOpacity>
+
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+          <Text style={styles.footerIcon}>🏠</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.footerIcon}>💵</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.footerIcon}>⚙️</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -171,45 +177,37 @@ export default function CadastroScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F9F9F9',
     padding: 20,
-    backgroundColor: '#F7F7F7',
   },
   header: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#D9D9D9',
+    justifyContent: 'space-between',
+    backgroundColor: '#F5F5F5',
     paddingVertical: 20,
-    marginBottom: 20,
-    borderRadius: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
-  backButton: {
-    position: 'absolute',
-    left: 10,
-    top: 10,
-  },
-  backText: {
-    fontSize: 18,
-    color: '#000',
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logo: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-    marginBottom: 10,
+    width: 35,
+    height: 35,
+    marginRight: 10,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
+    color: '#000',
   },
   subtitle: {
-    fontSize: 14,
-    color: '#007BFF',
-    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
     marginBottom: 20,
-    textDecorationLine: 'underline',
   },
   input: {
     height: 50,
@@ -225,10 +223,28 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 10,
   },
   buttonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    paddingVertical: 15,
+  },
+  footerIcon: {
+    fontSize: 24,
+    color: '#000',  // Ícones estão pretos
   },
 });

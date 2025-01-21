@@ -7,15 +7,15 @@ import {
   StyleSheet,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
-import { auth, signInWithEmailAndPassword } from '../firebaseConfig'; // Importe o Firebase
-import { FontAwesome } from '@expo/vector-icons'; // Importe o ícone do FontAwesome
+import { auth, signInWithEmailAndPassword } from '../firebaseConfig';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  // Função para fazer login
   const handleLogin = async () => {
     if (!email || !senha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos!');
@@ -23,30 +23,20 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      // Autenticar o usuário com o Firebase
       await signInWithEmailAndPassword(auth, email, senha);
       Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
-
-      // Navegar para a tela de Menu
-      navigation.navigate('MenuScreen'); // Certifique-se de que 'MenuScreen' está registrado no Stack.Navigator
+      navigation.navigate('MenuScreen');
     } catch (error) {
-      console.log(error); // Log do erro no console para depuração
+      console.log(error);
       if (error.code === 'auth/user-not-found') {
-        Alert.alert(
-          'Erro',
-          'Usuário não encontrado! Você precisa se cadastrar.',
-          [
-            {
-              text: 'Cadastrar',
-              onPress: () => navigation.navigate('CadastroScreen'), // Navega para a tela de cadastro
-            },
-            { text: 'Cancelar', style: 'cancel' },
-          ]
-        );
+        Alert.alert('Erro', 'Usuário não encontrado! Cadastre-se.', [
+          { text: 'Cadastrar', onPress: () => navigation.navigate('CadastroScreen') },
+          { text: 'Cancelar', style: 'cancel' },
+        ]);
       } else if (error.code === 'auth/wrong-password') {
         Alert.alert('Erro', 'Senha incorreta!');
       } else if (error.code === 'auth/invalid-email') {
-        Alert.alert('Erro', 'O e-mail fornecido é inválido!');
+        Alert.alert('Erro', 'E-mail inválido!');
       } else {
         Alert.alert('Erro', 'Ocorreu um erro, tente novamente.');
       }
@@ -54,82 +44,56 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <FontAwesome name="bars" size={24} color="#000" />
-        </TouchableOpacity>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../assets/logorotarorio.png')}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>Menu</Text>
+    <View style={styles.containerWrapper}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+            <FontAwesome name="arrow-left" size={24} color="#000" />
+          </TouchableOpacity>
+          <View style={styles.logoContainer}>
+            <Image source={require('../assets/logorotarorio.png')} style={styles.logo} />
+            <Text style={styles.title}>Login</Text>
+          </View>
+          <View style={{ width: 24 }} />
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('PerfilScreen')}>
-          <FontAwesome name="user-circle" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
 
-      {/* Espaço para a logo */}
-      <View style={styles.logoContainer}>
-        <Image
-          source={require('../assets/logorotarorio.png')} // Substitua pelo caminho do logotipo
-          style={styles.logo}
+        <Text style={styles.subtitle}>Faça login para continuar!</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
         />
-      </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry
+        />
 
-      {/* Título */}
-      <Text style={styles.title}>Entrar!</Text>
-      <Text style={styles.subtitle}>Faça login para continuar!</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>ENTRAR</Text>
+        </TouchableOpacity>
 
-      {/* Campos de entrada */}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
+        <Text style={styles.link} onPress={() => navigation.navigate('EsqueceuSenhaScreen')}>
+          Esqueceu sua senha?
+        </Text>
+        <Text style={styles.link} onPress={() => navigation.navigate('CadastroScreen')}>
+          Inscrever-se!
+        </Text>
+      </ScrollView>
 
-      {/* Botão de login */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>ENTRAR</Text>
-      </TouchableOpacity>
-
-      {/* Link para recuperação de senha */}
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('EsqueceuSenhaScreen')}
-      >
-        Esqueceu sua senha?
-      </Text>
-
-      {/* Link para cadastro */}
-      <Text
-        style={styles.link}
-        onPress={() => navigation.navigate('CadastroScreen')}
-      >
-        Inscrever-se!
-      </Text>
-
-      {/* Barra de navegação inferior */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <FontAwesome name="home" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Credito')}>
+        <TouchableOpacity>
           <FontAwesome name="dollar" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Ajuda')}>
+        <TouchableOpacity>
           <FontAwesome name="cog" size={24} color="#000" />
         </TouchableOpacity>
       </View>
@@ -137,12 +101,15 @@ export default function LoginScreen({ navigation }) {
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
-  container: {
+  containerWrapper: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#F7F7F7',
+  },
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    alignItems: 'center',
   },
   logoContainer: {
     alignItems: 'center',
@@ -153,37 +120,37 @@ const styles = StyleSheet.create({
     height: 100,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
     color: '#333',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
     textAlign: 'center',
     marginBottom: 20,
   },
   input: {
+    width: '100%',
     height: 50,
     backgroundColor: '#EDEDED',
     borderRadius: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     marginBottom: 15,
     fontSize: 16,
   },
   button: {
+    width: '100%',
     height: 50,
     backgroundColor: '#000',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    marginTop: 10,
   },
   buttonText: {
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   link: {
@@ -197,16 +164,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#FFF',
-    elevation: 4, // Sombra para o cabeçalho
+    width: '100%',
+    marginBottom: 20,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    padding: 10,
+    paddingVertical: 15,
     backgroundColor: '#FFF',
-    elevation: 4, // Sombra para o rodapé
+    elevation: 4,
   },
 });

@@ -5,18 +5,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
+  Image,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-export default function AjudaScreen() {
-  // Gerar um número aleatório para contato
+export default function AjudaScreen({ navigation }) {
   const numeroContato = `+55 48 999796771`;
-
-  // Mensagem para WhatsApp
   const mensagemWhatsApp = `Olá, gostaria de ajuda com o aplicativo.`;
 
   const abrirWhatsApp = () => {
-    const url = `https://wa.me/${numeroContato.replace(/[^\d]/g, '')}?text=${encodeURIComponent(
+    const url = `https://wa.me/${numeroContato.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
       mensagemWhatsApp
     )}`;
     Linking.openURL(url).catch(() => {
@@ -35,72 +33,135 @@ export default function AjudaScreen() {
 
   return (
     <View style={styles.container}>
+    <View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation.navigate("MenuScreen")}>
+        <FontAwesome name="arrow-left" size={24} color="#000" />
+      </TouchableOpacity>
+      <View style={styles.logoContainer}>
+        <Image source={require("../assets/logorotarorio.png")} style={styles.logo} />
+        <Text style={styles.title}>Perfil</Text>
+      </View>
+      <View style={{ width: 24 }} />
+    </View>
+  
+    <View style={styles.content}>
       <Text style={styles.title}>Precisa de Ajuda?</Text>
       <Text style={styles.subtitle}>
         Entre em contato com nossa equipe de suporte pelos canais abaixo:
       </Text>
-
+  
       <View style={styles.contactContainer}>
         <FontAwesome name="phone" size={24} color="#6200EE" />
         <Text style={styles.contactText}>{numeroContato}</Text>
       </View>
-
+  
       <TouchableOpacity style={styles.button} onPress={enviarEmail}>
         <FontAwesome name="envelope" size={20} color="#fff" />
         <Text style={styles.buttonText}>Enviar E-mail</Text>
       </TouchableOpacity>
-
+  
       <TouchableOpacity style={styles.button} onPress={abrirWhatsApp}>
         <FontAwesome name="whatsapp" size={20} color="#fff" />
         <Text style={styles.buttonText}>Entrar em Contato via WhatsApp</Text>
       </TouchableOpacity>
     </View>
+  
+    <View style={styles.footer}>
+      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+        <FontAwesome name="home" size={24} color="#000" />
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <FontAwesome name="dollar" size={24} color="#000" />
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <FontAwesome name="cog" size={24} color="#000" />
+      </TouchableOpacity>
+    </View>
+  </View>
+  
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#F9F9F9',
-    justifyContent: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F5F5F5',
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 35,
+    height: 35,
+    marginRight: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#6200EE',
-    textAlign: 'center',
-    marginBottom: 10,
+    color: '#000',
   },
   subtitle: {
     fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
+    color: '#666',
     marginBottom: 20,
   },
   contactContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+    marginVertical: 15,
   },
   contactText: {
     fontSize: 18,
     marginLeft: 10,
-    color: '#333',
+    fontWeight: 'bold',
+    color: '#000',
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6200EE',
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 15,
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginVertical: 10,
+    width: '90%',
+    alignSelf: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
     marginLeft: 10,
   },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    paddingVertical: 15,
+  },
 });
+
+

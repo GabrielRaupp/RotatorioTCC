@@ -26,8 +26,37 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import * as ImagePicker from 'expo-image-picker';
+import { FontAwesome } from '@expo/vector-icons';
 
-export default function RegistroPlacasScreen() {
+// Header Component
+const Header = ({ navigation }) => (
+  <View style={styles.header}>
+    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+      <FontAwesome name="arrow-left" size={24} color="#000" />
+    </TouchableOpacity>
+    <View style={styles.logoContainer}>
+      <Text style={styles.headerText}>Registro de Placas</Text>
+    </View>
+    <View style={{ width: 24 }} />
+  </View>
+);
+
+// Footer Component
+const Footer = ({ navigation }) => (
+  <View style={styles.footer}>
+    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+      <FontAwesome name="home" size={24} color="#000" />
+    </TouchableOpacity>
+    <TouchableOpacity>
+      <FontAwesome name="dollar" size={24} color="#000" />
+    </TouchableOpacity>
+    <TouchableOpacity>
+      <FontAwesome name="cog" size={24} color="#000" />
+    </TouchableOpacity>
+  </View>
+);
+
+export default function RegistroPlacasScreen({ navigation }) {
   const [placa, setPlaca] = useState('');
   const [marca, setMarca] = useState('');
   const [ano, setAno] = useState('');
@@ -144,12 +173,10 @@ export default function RegistroPlacasScreen() {
   }, []);
 
   return (
-    
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      
-      <ScrollView 
-      contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-        
+      <Header navigation={navigation} />
+
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>{editandoPlaca ? 'Editar Placa' : 'Registrar Placas'}</Text>
 
         <TextInput
@@ -202,17 +229,19 @@ export default function RegistroPlacasScreen() {
                 <Text style={styles.placaText}>
                   {placa.placa} - {placa.marca} - {placa.ano} - {placa.cor}
                 </Text>
-                <TouchableOpacity onPress={() => editarPlaca(placa)} style={styles.editButton}>
-                  <Text style={styles.buttonText}>Editar</Text>
+                <TouchableOpacity onPress={() => editarPlaca(placa)}>
+                  <Text style={styles.editText}>Editar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => excluirPlaca(placa.id)} style={styles.deleteButton}>
-                  <Text style={styles.buttonText}>Excluir</Text>
+                <TouchableOpacity onPress={() => excluirPlaca(placa.id)}>
+                  <Text style={styles.deleteText}>Excluir</Text>
                 </TouchableOpacity>
               </View>
             ))
           )}
         </View>
       </ScrollView>
+
+      <Footer navigation={navigation} />
     </KeyboardAvoidingView>
   );
 }
@@ -220,100 +249,119 @@ export default function RegistroPlacasScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F7F7F7',
+    paddingTop: 40,
   },
   scrollContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 60,
   },
-  title: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 20,
+  },
+  headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
+    color: '#000',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   input: {
-    height: 50,
-    backgroundColor: '#EDEDED',
-    borderRadius: 8,
+    backgroundColor: '#fff',
+    borderRadius: 5,
     paddingHorizontal: 10,
+    paddingVertical: 12,
     marginBottom: 15,
-    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
   button: {
-    height: 50,
-    backgroundColor: '#000',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  photoButton: {
-    height: 50,
-    backgroundColor: '#000',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
+    backgroundColor: '#000', // Cor preta para o botão
+    paddingVertical: 12,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#fff', // Cor branca para o texto
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  photoButton: {
+    backgroundColor: '#000', // Cor preta para o botão de foto
+    paddingVertical: 12,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   image: {
     width: '100%',
     height: 200,
-    marginVertical: 15,
-    borderRadius: 8,
     resizeMode: 'cover',
+    marginBottom: 15,
   },
   subTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 20,
     marginBottom: 10,
-    color: '#333',
-  },
-  noPlacasText: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: '#888',
   },
   placaList: {
-    paddingHorizontal: 10,
-  },
-  placaContainer: {
     marginBottom: 20,
   },
+  placaContainer: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 5 },
+  },
   placaImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
+    width: 50,
+    height: 50,
+    borderRadius: 5,
     marginBottom: 10,
   },
   placaText: {
     fontSize: 16,
-    backgroundColor: '#FFF',
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#DDD',
+    marginBottom: 10,
   },
-  editButton: {
-    height: 40,
-    backgroundColor: '#008CBA',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 5,
+  editText: {
+    color: '#FF9800',
+    marginBottom: 10,
   },
-  deleteButton: {
-    height: 40,
-    backgroundColor: '#f44336',
-    borderRadius: 8,
-    justifyContent: 'center',
+  deleteText: {
+    color: '#F44336',
+  },
+  noPlacasText: {
+    color: '#888',
+    fontStyle: 'italic',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    marginVertical: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: -5 },
   },
 });
