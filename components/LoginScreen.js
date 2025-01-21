@@ -85,18 +85,6 @@ export default function LoginScreen({ navigation }) {
           Inscrever-se!
         </Text>
       </ScrollView>
-
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <FontAwesome name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome name="dollar" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome name="cog" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -167,12 +155,5 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
   },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: 15,
-    backgroundColor: '#FFF',
-    elevation: 4,
-  },
+
 });

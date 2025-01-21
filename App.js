@@ -18,6 +18,8 @@ import Credito from './components/CreditoScreen';
 import Buy from './components/BuyCredito';
 import Allveiculos from './components/Allveiculos';
 import Infracao from './components/Infracao';
+import Config from './components/Config';
+
 
 const Stack = createStackNavigator();
 
@@ -118,6 +120,12 @@ export default function App() {
             component={Infracao}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="Config"
+            component={Config}
+            options={{ headerShown: false }}
+          />
+
        </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

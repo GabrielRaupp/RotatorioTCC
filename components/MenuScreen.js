@@ -13,9 +13,6 @@ export default function MenuScreen({ navigation }) {
     <View style={styles.container}>
       {/* Cabeçalho */}
       <View style={styles.header}>
-        <TouchableOpacity>
-          <FontAwesome name="bars" size={24} color="#000" />
-        </TouchableOpacity>
         <View style={styles.logoContainer}>
           <Image
             source={require('../assets/logorotarorio.png')} 
@@ -88,15 +85,15 @@ export default function MenuScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Barra de navegação inferior */}
+
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <FontAwesome name="home" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Credito')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
           <FontAwesome name="dollar" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Ajuda')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Config')}>
           <FontAwesome name="cog" size={24} color="#000" />
         </TouchableOpacity>
       </View>

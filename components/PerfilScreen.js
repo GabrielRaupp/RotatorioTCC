@@ -104,15 +104,14 @@ export default function PerfilScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Barra de navegação inferior */}
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <FontAwesome name="home" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
           <FontAwesome name="dollar" size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Config')}>
           <FontAwesome name="cog" size={24} color="#000" />
         </TouchableOpacity>
       </View>

@@ -83,9 +83,9 @@ export default function AdminScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
-          <FontAwesome name="bars" size={24} color="#000" />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+      <FontAwesome name="arrow-left" size={24} color="#000" />
+    </TouchableOpacity>
         <Text style={styles.title}>Administração</Text>
         <TouchableOpacity>
           <FontAwesome name="user-circle" size={24} color="#000" />

@@ -31,7 +31,7 @@ import { FontAwesome } from '@expo/vector-icons';
 // Header Component
 const Header = ({ navigation }) => (
   <View style={styles.header}>
-    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+    <TouchableOpacity onPress={() => navigation.navigate('MenuScreen')}>
       <FontAwesome name="arrow-left" size={24} color="#000" />
     </TouchableOpacity>
     <View style={styles.logoContainer}>
@@ -44,16 +44,16 @@ const Header = ({ navigation }) => (
 // Footer Component
 const Footer = ({ navigation }) => (
   <View style={styles.footer}>
-    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-      <FontAwesome name="home" size={24} color="#000" />
-    </TouchableOpacity>
-    <TouchableOpacity>
-      <FontAwesome name="dollar" size={24} color="#000" />
-    </TouchableOpacity>
-    <TouchableOpacity>
-      <FontAwesome name="cog" size={24} color="#000" />
-    </TouchableOpacity>
-  </View>
+  <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+    <FontAwesome name="home" size={24} color="#000" />
+  </TouchableOpacity>
+  <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
+    <FontAwesome name="dollar" size={24} color="#000" />
+  </TouchableOpacity>
+  <TouchableOpacity onPress={() => navigation.navigate('Config')}>
+    <FontAwesome name="cog" size={24} color="#000" />
+  </TouchableOpacity>
+</View>
 );
 
 export default function RegistroPlacasScreen({ navigation }) {

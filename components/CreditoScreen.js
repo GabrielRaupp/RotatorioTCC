@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons';
 
 const CreditosScreen = () => {
   const [user, setUser] = useState({
@@ -12,34 +13,42 @@ const CreditosScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>Área de Créditos</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FontAwesome name="arrow-left" size={24} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.logoContainer}>
+          <Image source={require("../assets/logorotarorio.png")} style={styles.logo} />
+          <Text style={styles.title}>Créditos</Text>
+        </View>
+        <View style={{ width: 24 }} />
       </View>
 
-      {/* Exibição do nome do usuário e dos créditos */}
-      <View style={styles.userInfo}>
+      <View style={styles.content}>
         <Text style={styles.userName}>Nome: {user.name}</Text>
         <Text style={styles.userCredits}>Créditos: R$ {user.credits}</Text>
+
+        <TouchableOpacity
+          style={styles.buyCreditsButton}
+          onPress={() => navigation.navigate('Buy')}
+        >
+          <Text style={styles.buyCreditsButtonText}>Sem créditos? Compre aqui</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Botão para comprar créditos */}
-      <TouchableOpacity
-        style={styles.buyCreditsButton}
-        onPress={() => navigation.navigate('Buy')}
-      >
-        <Text style={styles.buyCreditsButtonText}>Sem créditos? Compre aqui</Text>
-      </TouchableOpacity>
-
-      {/* Botão para voltar à tela anterior */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => {
-          // Voltar à tela anterior
-          navigation.goBack();
-        }}
-      >
-        <Text style={styles.backButtonText}>Voltar</Text>
-      </TouchableOpacity>
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <FontAwesome name="home" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
+          <FontAwesome name="dollar" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Config')}>
+          <FontAwesome name="cog" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -47,19 +56,36 @@ const CreditosScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: '#F9F9F9',
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    backgroundColor: '#F5F5F5',
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
-  headerText: {
-    fontSize: 24,
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 35,
+    height: 35,
+    marginRight: 10,
+  },
+  title: {
+    fontSize: 22,
     fontWeight: 'bold',
+    color: '#000',
   },
-  userInfo: {
-    marginBottom: 30,
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 30,
     alignItems: 'center',
   },
   userName: {
@@ -73,23 +99,27 @@ const styles = StyleSheet.create({
   buyCreditsButton: {
     backgroundColor: '#FF6347',
     padding: 12,
-    borderRadius: 5,
+    borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
+    width: '100%',
   },
   buyCreditsButtonText: {
     color: '#fff',
     fontSize: 16,
   },
-  backButton: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 5,
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    paddingVertical: 15,
   },
 });
 

@@ -11,10 +11,32 @@ import {
 } from 'react-native';
 import { auth, signInWithEmailAndPassword } from '../firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
+import { getFirestore, doc, getDoc } from 'firebase/firestore'; 
+
+const db = getFirestore(); // Instância do Firestore
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [usuario, setUsuario] = useState(null);
+
+  // Função para buscar dados no Firestore
+  const buscarDadosUsuario = async (email) => {
+    try {
+      const docRef = doc(db, 'usuarios', email); 
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const dados = docSnap.data();
+        setUsuario(dados); 
+      } else {
+        Alert.alert('Erro', 'Nenhum usuário encontrado!');
+      }
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+      Alert.alert('Erro', 'Ocorreu um erro ao buscar os dados.');
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !senha) {
@@ -30,6 +52,7 @@ export default function LoginScreen({ navigation }) {
     try {
       await signInWithEmailAndPassword(auth, email, senha);
       Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
+      buscarDadosUsuario(email); // Busca os dados do usuário após o login
       navigation.navigate('Allveiculos');
     } catch (error) {
       console.log(error);
@@ -55,11 +78,10 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.containerWrapper}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-            <FontAwesome name="arrow-left" size={24} color="#000" />
-          </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+      <FontAwesome name="arrow-left" size={24} color="#000" />
+    </TouchableOpacity>
           <View style={styles.logoContainer}>
             <Image source={require('../assets/logorotarorio.png')} style={styles.logo} />
             <Text style={styles.title}>Login</Text>
@@ -89,6 +111,14 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.buttonText}>ENTRAR</Text>
         </TouchableOpacity>
 
+        {usuario && (
+          <View style={styles.userInfo}>
+            <Text style={styles.userInfoText}>Usuário: {usuario.nome}</Text>
+            <Text style={styles.userInfoText}>Placa: {usuario.placa}</Text>
+            <Text style={styles.userInfoText}>Email: {usuario.email}</Text>
+          </View>
+        )}
+
         <Text style={styles.link} onPress={() => navigation.navigate('EsqueceuSenhaScreen')}>
           Esqueceu sua senha?
         </Text>
@@ -96,19 +126,6 @@ export default function LoginScreen({ navigation }) {
           Inscrever-se
         </Text>
       </ScrollView>
-
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <FontAwesome name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome name="dollar" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome name="cog" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -186,5 +203,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#FFF',
     elevation: 4,
+  },
+  userInfo: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#EDEDED',
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  userInfoText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
