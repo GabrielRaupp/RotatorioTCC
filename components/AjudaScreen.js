@@ -33,16 +33,6 @@ export default function AjudaScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-    <View style={styles.header}>
-      <TouchableOpacity onPress={() => navigation.navigate("MenuScreen")}>
-        <FontAwesome name="arrow-left" size={24} color="#000" />
-      </TouchableOpacity>
-      <View style={styles.logoContainer}>
-        <Image source={require("../assets/logorotarorio.png")} style={styles.logo} />
-        <Text style={styles.title}>Perfil</Text>
-      </View>
-      <View style={{ width: 24 }} />
-    </View>
   
     <View style={styles.content}>
       <Text style={styles.title}>Precisa de Ajuda?</Text>
@@ -63,18 +53,6 @@ export default function AjudaScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={abrirWhatsApp}>
         <FontAwesome name="whatsapp" size={20} color="#fff" />
         <Text style={styles.buttonText}>Entrar em Contato via WhatsApp</Text>
-      </TouchableOpacity>
-    </View>
-  
-    <View style={styles.footer}>
-      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
-        <FontAwesome name="home" size={24} color="#000" />
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <FontAwesome name="dollar" size={24} color="#000" />
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <FontAwesome name="cog" size={24} color="#000" />
       </TouchableOpacity>
     </View>
   </View>

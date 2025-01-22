@@ -6,24 +6,11 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function MenuScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../assets/logorotarorio.png')} 
-            style={styles.logo}
-          />
-          <Text style={styles.title}>Menu</Text>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate('PerfilScreen')}>
-          <FontAwesome name="user-circle" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
 
       {/* Conteúdo principal */}
       <View style={styles.content}>
@@ -58,12 +45,9 @@ export default function MenuScreen({ navigation }) {
             />
             <Text style={styles.cardText}>localização</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
-            <Image
-              source={require('../assets/iconepesquisar.jpg')}
-              style={styles.icon}
-            />
-            <Text style={styles.cardText}>pesquisar</Text>
+          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Comprar')}>
+            <FontAwesome6 name="file-invoice-dollar" size={50} style={{marginBottom: 6}} />
+            <Text style={styles.cardText}>comprar vaga</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
@@ -75,27 +59,11 @@ export default function MenuScreen({ navigation }) {
             />
             <Text style={styles.cardText}>ajuda</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
-            <Image
-              source={require('../assets/multa.png')}
-              style={styles.icon}
-            />
+          <TouchableOpacity style={styles.card} onPress={() => {navigation.navigate("Infracoes")}}>
+            <FontAwesome6 name="triangle-exclamation" size={50} style={{marginBottom: 6}} />
             <Text style={styles.cardText}>infrações</Text>
           </TouchableOpacity>
         </View>
-      </View>
-
-
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <FontAwesome name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
-          <FontAwesome name="dollar" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Config')}>
-          <FontAwesome name="cog" size={24} color="#000" />
-        </TouchableOpacity>
       </View>
     </View>
   );

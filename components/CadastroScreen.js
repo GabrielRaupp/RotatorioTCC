@@ -55,6 +55,7 @@ export default function CadastroScreen({ navigation }) {
         cpf,
         fone,
         email,
+        credito: 200,
         createdAt: new Date(),
       });
 
@@ -159,17 +160,6 @@ export default function CadastroScreen({ navigation }) {
         <Text style={styles.buttonText}>CRIAR!</Text>
       </TouchableOpacity>
 
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
-          <Text style={styles.footerIcon}>🏠</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.footerIcon}>💵</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.footerIcon}>⚙️</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

@@ -13,28 +13,23 @@ export default function AdminScreen() {
 
   const carregarPlacas = async () => {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
-        setErro('Usuário não autenticado.');
-        return;
-      }
-
       const placasRef = collection(firestore, 'placas');
-      const q = query(placasRef, where('userId', '==', user.uid));
-      const placasSnapshot = await getDocs(q);
-
+      const placasSnapshot = await getDocs(placasRef);
+  
       if (placasSnapshot.empty) {
         setPlacasRegistradas([]);
         return;
       }
-
+  
       const placasList = await Promise.all(
         placasSnapshot.docs.map(async (docSnapshot) => {
           const placaData = docSnapshot.data();
-          const userDoc = await getDoc(doc(firestore, 'users', placaData.userId));
+          const userDoc = await getDoc(doc(firestore, 'usuarios', placaData.userId));
           const userInfo = userDoc.exists() ? userDoc.data() : { nome: 'Desconhecido', email: 'Não informado' };
-          
+  
+          // Definir pagamento com base nas condições
+          const pagamento = placaData.pago == null || placaData.pago || placaData.pago > 0;
+  
           return {
             id: docSnapshot.id,
             placa: placaData.placa || 'Placa desconhecida',
@@ -42,11 +37,11 @@ export default function AdminScreen() {
             nome: userInfo.nome || 'Nome não disponível',
             expiracao: placaData.expiracao || 'Data não disponível',
             imagem: placaData.imagem || null,
-            pago: placaData.pago || false,
+            pago: pagamento ,
           };
         })
       );
-
+  
       setPlacasRegistradas(placasList);
       setFilteredPlacas(placasList);
     } catch (error) {
@@ -54,6 +49,7 @@ export default function AdminScreen() {
       setErro('Erro ao carregar placas registradas. Tente novamente mais tarde.');
     }
   };
+  
 
   useEffect(() => {
     carregarPlacas();
@@ -71,6 +67,7 @@ export default function AdminScreen() {
       const placaRef = doc(firestore, 'placas', placaId);
       await updateDoc(placaRef, {
         infracao: true,
+        pago: false
       });
       Alert.alert('Sucesso', 'Infração registrada com sucesso!');
       carregarPlacas();

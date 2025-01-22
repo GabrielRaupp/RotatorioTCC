@@ -14,7 +14,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 
-export default function PerfilScreen({ navigation }) {
+export default function PerfilScreen({ navigationm, onLogout }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editable, setEditable] = useState(false);
@@ -51,7 +51,7 @@ export default function PerfilScreen({ navigation }) {
     const auth = getAuth();
     try {
       await signOut(auth);
-      navigation.replace("LoginScreen");
+      onLogout()
     } catch (error) {
       Alert.alert("Erro", "Falha ao realizar logout.");
     }
@@ -84,21 +84,6 @@ export default function PerfilScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("MenuScreen")}>
-          <FontAwesome name="arrow-left" size={24} color="#000" />
-        </TouchableOpacity>
-        <View style={styles.logoContainer}>
-          <Image source={require("../assets/logorotarorio.png")} style={styles.logo} />
-          <Text style={styles.title}>Editar Perfil</Text>
-        </View>
-      </View>
-
-      <Image
-        source={{ uri: "https://via.placeholder.com/150" }}
-        style={styles.profilePicture}
-      />
-
       <View style={styles.card}>
         <TextInput
           style={styles.input}
@@ -134,18 +119,6 @@ export default function PerfilScreen({ navigation }) {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
-
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <FontAwesome name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
-          <FontAwesome name="dollar" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Config')}>
-          <FontAwesome name="cog" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

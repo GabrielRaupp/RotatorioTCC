@@ -12,7 +12,7 @@ import {
 import { auth, signInWithEmailAndPassword } from '../firebaseConfig';
 import { FontAwesome } from '@expo/vector-icons';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ onLoginUser, onRegisterUser, navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
@@ -25,12 +25,12 @@ export default function LoginScreen({ navigation }) {
     try {
       await signInWithEmailAndPassword(auth, email, senha);
       Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
-      navigation.navigate('MenuScreen');
+      onLoginUser();
     } catch (error) {
       console.log(error);
       if (error.code === 'auth/user-not-found') {
         Alert.alert('Erro', 'Usuário não encontrado! Cadastre-se.', [
-          { text: 'Cadastrar', onPress: () => navigation.navigate('CadastroScreen') },
+          { text: 'Cadastrar', onPress: () => onRegister() },
           { text: 'Cancelar', style: 'cancel' },
         ]);
       } else if (error.code === 'auth/wrong-password') {
@@ -47,7 +47,7 @@ export default function LoginScreen({ navigation }) {
     <View style={styles.containerWrapper}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <FontAwesome name="arrow-left" size={24} color="#000" />
           </TouchableOpacity>
           <View style={styles.logoContainer}>

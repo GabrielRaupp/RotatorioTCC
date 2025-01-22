@@ -15,7 +15,7 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const db = getFirestore(); // Instância do Firestore
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, onLoginAdmin }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [usuario, setUsuario] = useState(null);
@@ -45,35 +45,10 @@ export default function LoginScreen({ navigation }) {
     }
 
     if (email === '11111' && senha === '123456') {
-      navigation.navigate('Allveiculos');
+      onLoginAdmin()
       return;
     }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      Alert.alert('Bem-vindo', 'Login efetuado com sucesso!');
-      buscarDadosUsuario(email); // Busca os dados do usuário após o login
-      navigation.navigate('Allveiculos');
-    } catch (error) {
-      console.log(error);
-      switch (error.code) {
-        case 'auth/user-not-found':
-          Alert.alert('Erro', 'Usuário não encontrado!', [
-            { text: 'Cadastrar', onPress: () => navigation.navigate('CadastroScreen') },
-            { text: 'Cancelar', style: 'cancel' },
-          ]);
-          break;
-        case 'auth/wrong-password':
-          Alert.alert('Erro', 'Senha incorreta!');
-          break;
-        case 'auth/invalid-email':
-          Alert.alert('Erro', 'O e-mail fornecido é inválido!');
-          break;
-        default:
-          Alert.alert('Erro', 'Ocorreu um erro, tente novamente.');
-      }
-    }
-  };
+  }
 
   return (
     <View style={styles.containerWrapper}>
@@ -118,13 +93,6 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.userInfoText}>Email: {usuario.email}</Text>
           </View>
         )}
-
-        <Text style={styles.link} onPress={() => navigation.navigate('EsqueceuSenhaScreen')}>
-          Esqueceu sua senha?
-        </Text>
-        <Text style={styles.link} onPress={() => navigation.navigate('CadastroScreen')}>
-          Inscrever-se
-        </Text>
       </ScrollView>
     </View>
   );

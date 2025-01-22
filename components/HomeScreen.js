@@ -9,9 +9,10 @@ export default function HomeScreen({ navigation }) {
     if (type === 'Usuário') {
       navigation.navigate('LoginScreen');
     } else if (type === 'Administrador') {
-      navigation.navigate('AdminScreen');
+      navigation.navigate('LoginAdminScreen');
     }
   };
+  
 
   const handleNoCadastro = () => {
     navigation.navigate('CadastroScreen');

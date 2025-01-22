@@ -26,35 +26,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome } from '@expo/vector-icons';
-
-// Header Component
-const Header = ({ navigation }) => (
-  <View style={styles.header}>
-    <TouchableOpacity onPress={() => navigation.navigate('MenuScreen')}>
-      <FontAwesome name="arrow-left" size={24} color="#000" />
-    </TouchableOpacity>
-    <View style={styles.logoContainer}>
-      <Text style={styles.headerText}>Registro de Placas</Text>
-    </View>
-    <View style={{ width: 24 }} />
-  </View>
-);
-
-// Footer Component
-const Footer = ({ navigation }) => (
-  <View style={styles.footer}>
-  <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-    <FontAwesome name="home" size={24} color="#000" />
-  </TouchableOpacity>
-  <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
-    <FontAwesome name="dollar" size={24} color="#000" />
-  </TouchableOpacity>
-  <TouchableOpacity onPress={() => navigation.navigate('Config')}>
-    <FontAwesome name="cog" size={24} color="#000" />
-  </TouchableOpacity>
-</View>
-);
+import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function RegistroPlacasScreen({ navigation }) {
   const [placa, setPlaca] = useState('');
@@ -72,11 +44,11 @@ export default function RegistroPlacasScreen({ navigation }) {
   const carregarPlacas = async () => {
     try {
       if (!user) throw new Error('Usuário não autenticado.');
-
+  
       const q = query(
         collection(firestore, 'placas'),
         where('userId', '==', user.uid),
-        orderBy('placa', 'asc')
+        orderBy('indice', 'asc') // Ordenar pelo índice
       );
       const querySnapshot = await getDocs(q);
       const placas = querySnapshot.docs.map((doc) => ({
@@ -85,34 +57,27 @@ export default function RegistroPlacasScreen({ navigation }) {
       }));
       setPlacasRegistradas(placas);
     } catch (error) {
-      Alert.alert('Erro', error.message);
+      console.error('Erro', error.message);
     }
   };
+  
 
-  const salvarImagemNoStorage = async (uri) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const storageRef = ref(storage, `placas/${new Date().getTime()}.jpg`);
-      await uploadBytes(storageRef, blob);
-      return await getDownloadURL(storageRef);
-    } catch (error) {
-      throw new Error('Erro ao salvar imagem no Storage.');
-    }
-  };
 
   const registrarPlaca = async () => {
     if (!validarPlaca(placa)) {
       Alert.alert('Erro', 'A placa deve estar no formato correto (3 letras e 4 números).');
       return;
     }
-
+  
     try {
       if (!user) throw new Error('Usuário não autenticado.');
-
-      let imageUrl = image ? await salvarImagemNoStorage(image) : null;
-      const novaPlaca = { placa, marca, ano, cor, imageUrl, userId: user.uid };
-
+  
+      // Gerar índice para a placa
+      const placasExistentes = placasRegistradas.length;
+      const indice = placasExistentes + 1;  // Índice simples para adicionar as placas em ordem
+  
+      const novaPlaca = { placa, marca, ano, cor, userId: user.uid, indice };
+  
       if (editandoPlaca) {
         await updateDoc(doc(firestore, 'placas', editandoPlaca.id), novaPlaca);
         setPlacasRegistradas((prev) =>
@@ -129,16 +94,8 @@ export default function RegistroPlacasScreen({ navigation }) {
       Alert.alert('Erro', error.message);
     }
   };
+  
 
-  const tirarFoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) setImage(result.uri);
-  };
 
   const editarPlaca = (placa) => {
     setEditandoPlaca(placa);
@@ -174,7 +131,7 @@ export default function RegistroPlacasScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Header navigation={navigation} />
+  
 
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>{editandoPlaca ? 'Editar Placa' : 'Registrar Placas'}</Text>
@@ -212,12 +169,6 @@ export default function RegistroPlacasScreen({ navigation }) {
           <Text style={styles.buttonText}>{editandoPlaca ? 'Atualizar Placa' : 'Registrar Placa'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.photoButton} onPress={tirarFoto}>
-          <Text style={styles.buttonText}>Adicionar Foto</Text>
-        </TouchableOpacity>
-
-        {image && <Image source={{ uri: image }} style={styles.image} />}
-
         <Text style={styles.subTitle}>Placas Registradas:</Text>
         <View style={styles.placaList}>
           {placasRegistradas.length === 0 ? (
@@ -225,7 +176,6 @@ export default function RegistroPlacasScreen({ navigation }) {
           ) : (
             placasRegistradas.map((placa) => (
               <View key={placa.id} style={styles.placaContainer}>
-                <Image source={{ uri: placa.imageUrl }} style={styles.placaImage} />
                 <Text style={styles.placaText}>
                   {placa.placa} - {placa.marca} - {placa.ano} - {placa.cor}
                 </Text>
@@ -236,12 +186,10 @@ export default function RegistroPlacasScreen({ navigation }) {
                   <Text style={styles.deleteText}>Excluir</Text>
                 </TouchableOpacity>
               </View>
-            ))
+            )) 
           )}
         </View>
       </ScrollView>
-
-      <Footer navigation={navigation} />
     </KeyboardAvoidingView>
   );
 }

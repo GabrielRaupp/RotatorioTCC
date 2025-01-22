@@ -1,54 +1,69 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { getAuth } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { firestore } from "../firebaseConfig";
 
 const CreditosScreen = () => {
-  const [user, setUser] = useState({
-    name: 'Gabriel', // Nome do usuário
-    credits: 100, // Créditos iniciais
-  });
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // Estado para o RefreshControl
+
+  const fetchUserData = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      try {
+        const userDocRef = doc(firestore, "usuarios", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          setUserData(userDoc.data());
+        } else {
+          Alert.alert("Erro", "Dados do usuário não encontrados.");
+        }
+      } catch (error) {
+        Alert.alert("Erro", "Ocorreu um erro ao buscar os dados do usuário.");
+      }
+    } else {
+      Alert.alert("Erro", "Usuário não autenticado.");
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  // Função para o refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchUserData(); // Atualiza os dados do usuário
+    setRefreshing(false);
+  }, []);
 
   const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <FontAwesome name="arrow-left" size={24} color="#000" />
-        </TouchableOpacity>
-        <View style={styles.logoContainer}>
-          <Image source={require("../assets/logorotarorio.png")} style={styles.logo} />
-          <Text style={styles.title}>Créditos</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.content}>
+          <FontAwesome6 name="wallet" size={60} style={{ textAlign: 'center' }} />
+          <Text style={styles.userCredits}>Créditos Disponíveis</Text>
+          <Text style={{ fontSize: 40, textAlign: 'center' }}>
+            R$ {userData?.credito || 0}
+          </Text>
         </View>
-        <View style={{ width: 24 }} />
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.userName}>Nome: {user.name}</Text>
-        <Text style={styles.userCredits}>Créditos: R$ {user.credits}</Text>
-
-        <TouchableOpacity
-          style={styles.buyCreditsButton}
-          onPress={() => navigation.navigate('Buy')}
-        >
-          <Text style={styles.buyCreditsButtonText}>Sem créditos? Compre aqui</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <FontAwesome name="home" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Buy')}>
-          <FontAwesome name="dollar" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Config')}>
-          <FontAwesome name="cog" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -57,69 +72,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9F9F9',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
-  header: {
-    flexDirection: 'row',
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#F5F5F5',
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logo: {
-    width: 35,
-    height: 35,
-    marginRight: 10,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#000',
   },
   content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    alignItems: 'center',
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 10,
+    padding: 60,
+    backgroundColor: '#00e676',
+    borderRadius: 30,
+    elevation: 10,
   },
   userCredits: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-  buyCreditsButton: {
-    backgroundColor: '#FF6347',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-    width: '100%',
-  },
-  buyCreditsButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-    paddingVertical: 15,
+    fontSize: 20,
+    textAlign: 'center',
   },
 });
 
